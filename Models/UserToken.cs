@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace AuthorizationApi.Models
 {
+    
     [BsonIgnoreExtraElements]
     public class UserToken
     {
@@ -21,4 +22,5 @@ namespace AuthorizationApi.Models
         [BsonElement("timeExpires")]
         public int TimeExpires { get; set; }
     }
+
 }

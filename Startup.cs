@@ -34,7 +34,9 @@ namespace gamitude_auth
 
             services.AddSingleton<IAuthorizationDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<AuthorizationDatabaseSettings>>().Value);
+
             services.AddSingleton<UserService>();
+            services.AddSingleton<UserTokenService>();
             services.AddControllers();
         }
 
@@ -50,7 +52,7 @@ namespace gamitude_auth
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

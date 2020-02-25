@@ -1,73 +1,65 @@
 using AuthorizationApi.Models;
 using AuthorizationApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
-namespace UsersApi.Controllers
+namespace AuthorizationApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    // [Authorize]
+    public class AuthorizationController : ControllerBase
     {
-        private readonly UserService _projectService;
+        private readonly UserService _userService;
+        private readonly UserTokenService _userTokenService;
 
-        public UsersController(UserService projectService)
+        public AuthorizationController(UserService userService, UserTokenService userTokenService)
         {
-            _projectService = projectService;
+            _userService = userService;
+            _userTokenService = userTokenService;
         }
 
-        [HttpGet]
-        public ActionResult<List<User>> Get() => _projectService.Get();
 
-        [HttpGet("{id:length(24)}", Name = "GetUser")]
-        public ActionResult<User> Get(string id)
+        [HttpPost]
+        [Route("Register")]
+        public ActionResult<User> Register(User user)
         {
-            var project = _projectService.Get(id);
+            Console.WriteLine("In Register");
+            Console.WriteLine(user.ToString());
 
-            if (project == null)
-            {
-                return NotFound();
-            }
+            /*TODO
+            * check if email exist => return error
+            * hash password
+            * save to db
+            * generate JWT => save to db
+            * response 201 with JWT
+            */
+            // _userService.Create(user);
 
-            return project;
+            return CreatedAtRoute("Register", user);
+            // return CreatedAtRoute("Register", new { id = user.Id.ToString() }, user);
         }
 
         [HttpPost]
-        public ActionResult<User> Create(User project)
-        {
-            _projectService.Create(project);
+        [Route("Login")]
 
-            return CreatedAtRoute("GetUser", new { id = project.Id.ToString() }, project);
+        public ActionResult<UserLogin> Login(UserLogin user)
+        {
+            Console.WriteLine(user);
+
+            /*TODO
+            * check if email exist => return error
+            * check if hash(passsword) match => return error
+            * generate JWT => save to db
+            * response 200 with JWT
+            */
+            // _userService.Create(user);
+            user.Password = null;
+            return Ok(user);
         }
 
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, User projectIn)
-        {
-            var project = _projectService.Get(id);
 
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            _projectService.Update(id, projectIn);
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
-        {
-            var project = _projectService.Get(id);
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            _projectService.Remove(project.Id);
-
-            return NoContent();
-        }
     }
 }
