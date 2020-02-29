@@ -1,65 +1,70 @@
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using AuthorizationApi.Models;
 using AuthorizationApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
-namespace AuthorizationApi.Controllers
-{
-    [Route("api/[controller]")]
+namespace AuthorizationApi.Controllers {
+    [Route ("api/[controller]/[action]")]
     [ApiController]
     // [Authorize]
-    public class AuthorizationController : ControllerBase
-    {
+    public class AuthorizationController : ControllerBase {
         private readonly UserService _userService;
         private readonly UserTokenService _userTokenService;
 
-        public AuthorizationController(UserService userService, UserTokenService userTokenService)
-        {
+        public AuthorizationController (UserService userService, UserTokenService userTokenService) {
             _userService = userService;
             _userTokenService = userTokenService;
         }
 
-
         [HttpPost]
-        [Route("Register")]
-        public ActionResult<User> Register(User user)
-        {
-            Console.WriteLine("In Register");
-            Console.WriteLine(user.ToString());
+        [Consumes ("application/json")]
+        public ActionResult<User> Register (User user) {
 
+            Console.WriteLine ("In Register");
+            Console.WriteLine (user);
+
+            // if (null == _userService.GetByEmail (user.Email)) {
+            //     return NotFound ();
+            // };
+            user.DateAdded = DateTime.Now;
+            user.Password = new PasswordHasher<String>().HashPassword(user.DateAdded.ToString(),user.Password);
+            _userService.Create(user);
+            
             /*TODO
-            * check if email exist => return error
-            * hash password
-            * save to db
-            * generate JWT => save to db
-            * response 201 with JWT
-            */
+             * hash password
+             * save to db
+             * generate JWT => save to db
+             * response 201 with JWT
+             */
             // _userService.Create(user);
-
-            return CreatedAtRoute("Register", user);
+            // return Ok(user);
+            return Created ("Register", user);
             // return CreatedAtRoute("Register", new { id = user.Id.ToString() }, user);
         }
 
         [HttpPost]
-        [Route("Login")]
-
-        public ActionResult<UserLogin> Login(UserLogin user)
-        {
-            Console.WriteLine(user);
+        [Consumes ("application/json")]
+        public ActionResult<UserLogin> Login (UserLogin user) {
+            Console.WriteLine ("In Login");
+            Console.WriteLine (user);
 
             /*TODO
-            * check if email exist => return error
-            * check if hash(passsword) match => return error
-            * generate JWT => save to db
-            * response 200 with JWT
-            */
+             * check if email exist => return error
+             * check if hash(passsword) match => return error
+             * generate JWT => save to db
+             * response 200 with JWT
+             */
             // _userService.Create(user);
             user.Password = null;
-            return Ok(user);
+            return Ok (user);
         }
-
 
     }
 }

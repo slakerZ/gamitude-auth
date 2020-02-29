@@ -17,12 +17,8 @@ namespace AuthorizationApi.Services
             _Users = database.GetCollection<User>(settings.UsersCollectionName);
         }
 
-        public List<User> Get() =>
-            _Users.Find(User => true).ToList();
-
-
-        public User Get(string id) =>
-            _Users.Find<User>(User => User.Id == id).FirstOrDefault();
+        public User GetByEmail(string email) =>
+            _Users.Find<User>(User => User.Email == email).FirstOrDefault();
 
         public User Create(User User)
         {

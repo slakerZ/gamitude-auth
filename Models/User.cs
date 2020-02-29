@@ -24,6 +24,7 @@ namespace AuthorizationApi.Models
         public DateTime DateAdded { get; set; }
     }
 
+
     public class UserLogin
     {
         public string Email { get; set; }
