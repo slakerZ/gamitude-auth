@@ -29,41 +29,32 @@ namespace AuthorizationApi.Controllers {
 
             Console.WriteLine ("In Register");
             Console.WriteLine (user);
-
-            // if (null == _userService.GetByEmail (user.Email)) {
+            String password = user.Password;
+            // if (null != _userService.GetByEmail (user.Email)) {
             //     return NotFound ();
             // };
             user.DateAdded = DateTime.Now;
             user.Password = new PasswordHasher<String>().HashPassword(user.DateAdded.ToString(),user.Password);
             _userService.Create(user);
             
-            /*TODO
-             * hash password
-             * save to db
-             * generate JWT => save to db
-             * response 201 with JWT
-             */
-            // _userService.Create(user);
-            // return Ok(user);
-            return Created ("Register", user);
+
+            user.Password = null;
+            // UserLogin userLogin = new UserLogin();
+            // userLogin.Email = user.Email;
+            // userLogin.Password = password;
+
+            
+            // RedirectToAction("Login",userLogin);
+            return Created("Register",user);
             // return CreatedAtRoute("Register", new { id = user.Id.ToString() }, user);
         }
 
         [HttpPost]
         [Consumes ("application/json")]
-        public ActionResult<UserLogin> Login (UserLogin user) {
+        public ActionResult<UserToken> Login (UserLogin user) {
             Console.WriteLine ("In Login");
-            Console.WriteLine (user);
 
-            /*TODO
-             * check if email exist => return error
-             * check if hash(passsword) match => return error
-             * generate JWT => save to db
-             * response 200 with JWT
-             */
-            // _userService.Create(user);
-            user.Password = null;
-            return Ok (user);
+            return Ok (_userService.Authenticate(user));
         }
 
     }
