@@ -20,7 +20,7 @@ namespace AuthorizationApi.Models
         public string Token { get; set; }
 
         [BsonElement("timeExpires")]
-        public int TimeExpires { get; set; }
+        public DateTime Expires { get; set; }
     }
 
 }

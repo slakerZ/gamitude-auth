@@ -9,6 +9,7 @@ using System;
 using Microsoft.IdentityModel.Tokens;
 using AuthorizationApi.Helpers;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
 
 namespace AuthorizationApi.Services
 {
@@ -17,41 +18,53 @@ namespace AuthorizationApi.Services
         private readonly IMongoCollection<User> _Users;
         private readonly AppSettings _appSettings;
         private readonly UserTokenService _userTokenService;
-        
-        public UserService(IAuthorizationDatabaseSettings settings,IOptions<AppSettings> appSettings, UserTokenService userTokenService)
+
+        public UserService(IAuthorizationDatabaseSettings settings, IOptions<AppSettings> appSettings, UserTokenService userTokenService)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
             _Users = database.GetCollection<User>(settings.UsersCollectionName);
             _userTokenService = userTokenService;
+            _appSettings = appSettings.Value;
+
         }
 
         public UserToken Authenticate(UserLogin userLogin)
         {
-            var user = _Users.Find(x => x.Email == userLogin.Email && x.Password == userLogin.Password).FirstOrDefault();
-
+            User user = GetByEmail(userLogin.Email);
+            
             // return null if user not found
             if (user == null)
+            {
                 return null;
+            }
+
+
+            // return null if user password dont match
+            if (new PasswordHasher<String>().VerifyHashedPassword(user.DateAdded.ToString(),user.Password,userLogin.Password) == 0)
+            {
+                return null;
+            }
 
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var Expires = DateTime.UtcNow.AddDays(7);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = Expires,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             UserToken userToken = new UserToken();
             userToken.Token = tokenHandler.WriteToken(token);
             userToken.UserId = user.Id;
-
+            userToken.Expires = Expires;
             return _userTokenService.CreateOrUpdate(userToken);
         }
 

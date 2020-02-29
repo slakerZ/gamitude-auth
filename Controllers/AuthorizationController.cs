@@ -10,51 +10,58 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 
-namespace AuthorizationApi.Controllers {
-    [Route ("api/[controller]/[action]")]
+namespace AuthorizationApi.Controllers
+{
+    [Route("api/[controller]/[action]")]
     [ApiController]
     // [Authorize]
-    public class AuthorizationController : ControllerBase {
+    public class AuthorizationController : ControllerBase
+    {
         private readonly UserService _userService;
         private readonly UserTokenService _userTokenService;
 
-        public AuthorizationController (UserService userService, UserTokenService userTokenService) {
+        public AuthorizationController(UserService userService, UserTokenService userTokenService)
+        {
             _userService = userService;
             _userTokenService = userTokenService;
         }
 
         [HttpPost]
-        [Consumes ("application/json")]
-        public ActionResult<User> Register (User user) {
+        [Consumes("application/json")]
+        public ActionResult<User> Register(User user)
+        {
 
-            Console.WriteLine ("In Register");
-            Console.WriteLine (user);
+            Console.WriteLine("In Register");
+            Console.WriteLine(user);
             String password = user.Password;
-            // if (null != _userService.GetByEmail (user.Email)) {
-            //     return NotFound ();
-            // };
+            //check if account does not exist
+            if (null != _userService.GetByEmail(user.Email))
+            {
+                return BadRequest();
+            };
+            // Add date time and create Hash with date as salt
             user.DateAdded = DateTime.Now;
-            user.Password = new PasswordHasher<String>().HashPassword(user.DateAdded.ToString(),user.Password);
+            user.Password = new PasswordHasher<String>().HashPassword(user.DateAdded.ToString(), user.Password);
             _userService.Create(user);
-            
+
 
             user.Password = null;
-            // UserLogin userLogin = new UserLogin();
-            // userLogin.Email = user.Email;
-            // userLogin.Password = password;
 
-            
-            // RedirectToAction("Login",userLogin);
-            return Created("Register",user);
-            // return CreatedAtRoute("Register", new { id = user.Id.ToString() }, user);
+            return Created("Register", user);
         }
 
         [HttpPost]
-        [Consumes ("application/json")]
-        public ActionResult<UserToken> Login (UserLogin user) {
-            Console.WriteLine ("In Login");
+        [Consumes("application/json")]
+        public ActionResult<UserToken> Login(UserLogin user)
+        {
+            Console.WriteLine("In Login");
+            UserToken userToken = _userService.Authenticate(user);
+            if (userToken == null)
+            {
+                Console.WriteLine("userToken is null");
+            }
 
-            return Ok (_userService.Authenticate(user));
+            return Ok(userToken);
         }
 
     }
