@@ -36,30 +36,9 @@ namespace gamitude_auth
 
             //services.AddCors();
 
-            // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 
-            // // configure jwt authentication
-            // var appSettings = appSettingsSection.Get<AppSettings>();
-            // var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-            // services.AddAuthentication(x =>
-            // {
-            //     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            // })
-            // .AddJwtBearer(x =>
-            // {
-            //     x.RequireHttpsMetadata = false;
-            //     x.SaveToken = true;
-            //     x.TokenValidationParameters = new TokenValidationParameters
-            //     {
-            //         ValidateIssuerSigningKey = true,
-            //         IssuerSigningKey = new SymmetricSecurityKey(key),
-            //         ValidateIssuer = false,
-            //         ValidateAudience = false
-            //     };
-            // });
 
 
             services.Configure<AuthorizationDatabaseSettings>(
@@ -68,8 +47,10 @@ namespace gamitude_auth
             services.AddSingleton<IAuthorizationDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<AuthorizationDatabaseSettings>>().Value);
 
+            //MAYBE SCOPED??
             services.AddSingleton<UserService>();
             services.AddSingleton<UserTokenService>();
+
             services.AddControllers();
         }
 
@@ -80,6 +61,7 @@ namespace gamitude_auth
             {
                 app.UseDeveloperExceptionPage();
             }
+
             // // global cors policy
             // app.UseCors(x => x
             //     .AllowAnyOrigin()

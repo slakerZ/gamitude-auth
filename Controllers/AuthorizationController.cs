@@ -40,7 +40,7 @@ namespace AuthorizationApi.Controllers
                 return BadRequest();
             };
             // Add date time and create Hash with date as salt
-            user.DateAdded = DateTime.Now;
+            user.DateAdded = DateTime.UtcNow;
             user.Password = new PasswordHasher<String>().HashPassword(user.DateAdded.ToString(), user.Password);
             _userService.Create(user);
 
