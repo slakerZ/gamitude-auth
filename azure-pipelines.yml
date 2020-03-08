@@ -17,7 +17,7 @@ steps:
     command: restore
     projects: '$(RestoreBuildProjects)'
     feedsToUse: config
-    nugetConfigPath: NuGet.config
+    nugetConfigPath: 
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
