@@ -30,13 +30,11 @@ namespace AuthorizationApi.Services
             UserToken user = _UsersToken.Find(UserToken => UserToken.UserId == userToken.UserId).FirstOrDefault();
             if (user == null)
             {
-                Console.WriteLine("CreateOrUpdate : create");
                 _UsersToken.InsertOne(userToken);
             }
             else
             {
                 userToken.Id=user.Id;
-                Console.WriteLine("CreateOrUpdate : update");
                 Update(userToken);
             }
             return userToken;

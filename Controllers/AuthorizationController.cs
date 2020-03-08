@@ -31,7 +31,6 @@ namespace AuthorizationApi.Controllers
         public ActionResult<User> Register(User user)
         {
 
-            Console.WriteLine("In Register");
             Console.WriteLine(user);
             String password = user.Password;
             //check if account does not exist
@@ -54,11 +53,10 @@ namespace AuthorizationApi.Controllers
         [Consumes("application/json")]
         public ActionResult<UserToken> Login(UserLogin user)
         {
-            Console.WriteLine("In Login");
             UserToken userToken = _userService.Authenticate(user);
             if (userToken == null)
             {
-                Console.WriteLine("userToken is null");
+                return NotFound();
             }
 
             return Ok(userToken);
