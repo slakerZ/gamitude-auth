@@ -36,7 +36,18 @@ spec:
     spec:
       containers:
       - name: auth
-        image: auth_IMAGE
+        image: AUTH_IMAGE
+        env:
+          - name: ASPNETCORE_AuthorizationDatabaseSettings__ConnectionString
+            valueFrom:
+              secretKeyRef:
+                name: database-string
+                key: connection_string
+          - name: ASPNETCORE_AppSettings__Secret
+            valueFrom:
+              secretKeyRef:
+                name: token-string
+                key: token_string
         ports:
           - containerPort: 80
         livenessProbe:      # Used by deployment controller
