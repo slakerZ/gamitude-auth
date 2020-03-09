@@ -16,8 +16,10 @@ steps:
   inputs:
     command: restore
     projects: '$(RestoreBuildProjects)'
-    feedsToUse: config
-    nugetConfigPath: 
+    feedsToUse: select
+    includeNuGetOrg: true # Required when feedsToUse == Select
+    #feedsToUse: config
+    #nugetConfigPath: ./nuget/
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
