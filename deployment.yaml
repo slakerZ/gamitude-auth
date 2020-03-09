@@ -38,12 +38,12 @@ spec:
       - name: auth
         image: AUTH_IMAGE
         env:
-          - name: ASPNETCORE_AuthorizationDatabaseSettings__ConnectionString
+          - name: AuthorizationDatabaseSettings__ConnectionString
             valueFrom:
               secretKeyRef:
                 name: database-string
                 key: connection_string
-          - name: ASPNETCORE_AppSettings__Secret
+          - name: AppSettings__Secret
             valueFrom:
               secretKeyRef:
                 name: token-string

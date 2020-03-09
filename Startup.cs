@@ -37,6 +37,7 @@ namespace gamitude_auth
             //services.AddCors();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
+            
             services.Configure<AppSettings>(appSettingsSection);
 
 
