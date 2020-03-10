@@ -1,4 +1,3 @@
-FROM mcr.microsoft.com/dotnet/core/runtime:3.1
-WORKDIR /app
-COPY ./bin/Release/netcoreapp3.1/publish /app/
-ENTRYPOINT ["dotnet", "gamitude-auth.dll"]
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+COPY bin/Release/netcoreapp3.1/publish/ app/
+ENTRYPOINT ["dotnet", "app/gamitude-auth.dll"]
