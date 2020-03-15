@@ -4,7 +4,7 @@ resources:
 queue:
   name: Hosted Ubuntu 1604
 trigger:
-- testing
+- master
 variables:
   TargetFramework: 'netcoreapp3.1'
   RestoreBuildProjects: '*.csproj'
