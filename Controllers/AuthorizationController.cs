@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AuthorizationApi.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/auth/[controller]/[action]")]
     [ApiController]
     // [Authorize]
     public class AuthorizationController : ControllerBase

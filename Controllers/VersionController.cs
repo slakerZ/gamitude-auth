@@ -12,7 +12,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AuthorizationApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth/[controller]")]
+    [Route("/")]
     [ApiController]
     public class VersionController : ControllerBase
     {
