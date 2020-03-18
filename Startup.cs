@@ -63,11 +63,11 @@ namespace gamitude_auth
                 app.UseDeveloperExceptionPage();
             }
 
-            // // global cors policy
-            // app.UseCors(x => x
-            //     .AllowAnyOrigin()
-            //     .AllowAnyMethod()
-            //     .AllowAnyHeader());
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             // app.UseHttpsRedirection(); 
 
