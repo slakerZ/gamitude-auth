@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AuthorizationApi.Services
 {
@@ -25,23 +26,23 @@ namespace AuthorizationApi.Services
         public UserToken Get(string id) =>
             _UsersToken.Find<UserToken>(UserToken => UserToken.Id == id).FirstOrDefault();
 
-        public UserToken CreateOrUpdate(UserToken userToken)
+        public async Task<UserToken> CreateOrUpdateAsync(UserToken userToken)
         {
-            UserToken user = _UsersToken.Find(UserToken => UserToken.UserId == userToken.UserId).FirstOrDefault();
+            UserToken user = await _UsersToken.Find(UserToken => UserToken.UserId == userToken.UserId).FirstOrDefaultAsync();
             if (user == null)
             {
-                _UsersToken.InsertOne(userToken);
+                await _UsersToken.InsertOneAsync(userToken);
             }
             else
             {
                 userToken.Id=user.Id;
-                Update(userToken);
+                await UpdateAsync(userToken);
             }
             return userToken;
         }
 
-        public void Update(UserToken UserTokenIn) =>
-            _UsersToken.ReplaceOne(UserToken => UserToken.UserId == UserTokenIn.UserId, UserTokenIn);
+        public async Task UpdateAsync(UserToken UserTokenIn) =>
+            await _UsersToken.ReplaceOneAsync(UserToken => UserToken.UserId == UserTokenIn.UserId, UserTokenIn);
 
         public void Remove(UserToken UserTokenIn) =>
             _UsersToken.DeleteOne(UserToken => UserToken.Id == UserTokenIn.Id);

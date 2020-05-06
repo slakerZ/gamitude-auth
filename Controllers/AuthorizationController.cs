@@ -9,6 +9,8 @@ using AuthorizationApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AuthorizationApi.Controllers
 {
@@ -28,32 +30,41 @@ namespace AuthorizationApi.Controllers
 
         [HttpPost]
         [Consumes("application/json")]
-        public ActionResult<User> Register(User user)
+        public async Task<ActionResult<User>> Register(User user)
         {
 
             Console.WriteLine(user);
             String password = user.Password;
             //check if account does not exist
-            if (null != _userService.GetByEmail(user.Email))
+            if (null != await _userService.GetByEmailAsync(user.Email))
             {
                 return BadRequest();
             };
             // Add date time and create Hash with date as salt
             user.DateAdded = DateTime.UtcNow;
             user.Password = new PasswordHasher<String>().HashPassword(user.DateAdded.ToString(), user.Password);
-            _userService.Create(user);
+            user = await _userService.CreateAsync(user);
 
-
+            HttpClient client = new HttpClient();
+            String jsonString = "{ \"UserId\":\""+user.Id+"\"}";
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            // var result = await client.PostAsync("http://localhost:5030/api/stats/UserRank/Create", content);
+            var result = await client.PostAsync("http://gamitude.rocks:31779/api/stats/UserRank/Create", content);
             user.Password = null;
-
-            return Created("Register", user);
+            if(result.StatusCode == HttpStatusCode.OK)
+                return Created("Register", user);
+            else
+            {
+                Console.WriteLine("error while creaing user rank");
+                throw new Exception("creating user rank failed");
+            }
         }
 
         [HttpPost]
         [Consumes("application/json")]
-        public ActionResult<UserToken> Login(UserLogin user)
+        public async Task<ActionResult<UserToken>> Login(UserLogin user)
         {
-            UserToken userToken = _userService.Authenticate(user);
+            UserToken userToken = await _userService.AuthenticateAsync(user);
             if (userToken == null)
             {
                 return NotFound();

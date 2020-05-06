@@ -48,9 +48,8 @@ namespace gamitude_auth
             services.AddSingleton<IAuthorizationDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<AuthorizationDatabaseSettings>>().Value);
 
-            //MAYBE SCOPED??
-            services.AddSingleton<UserService>();
-            services.AddSingleton<UserTokenService>();
+            services.AddScoped<UserService>();
+            services.AddScoped<UserTokenService>();
 
             services.AddControllers();
         }

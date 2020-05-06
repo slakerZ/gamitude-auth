@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using AuthorizationApi.Helpers;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace AuthorizationApi.Services
 {
@@ -30,9 +31,9 @@ namespace AuthorizationApi.Services
 
         }
 
-        public UserToken Authenticate(UserLogin userLogin)
+        public async Task< UserToken> AuthenticateAsync(UserLogin userLogin)
         {
-            User user = GetByEmail(userLogin.Email);
+            User user = await GetByEmailAsync(userLogin.Email);
             
             // return null if user not found
             if (user == null)
@@ -65,16 +66,16 @@ namespace AuthorizationApi.Services
             userToken.Token = tokenHandler.WriteToken(token);
             userToken.UserId = user.Id;
             userToken.Expires = Expires;
-            return _userTokenService.CreateOrUpdate(userToken);
+            return await _userTokenService.CreateOrUpdateAsync(userToken);
         }
 
 
-        public User GetByEmail(string email) =>
-            _Users.Find<User>(User => User.Email == email).FirstOrDefault();
+        public async Task<User> GetByEmailAsync(string email) =>
+            await _Users.Find<User>(User => User.Email == email).FirstOrDefaultAsync();
 
-        public User Create(User User)
+        public async Task< User> CreateAsync(User User)
         {
-            _Users.InsertOne(User);
+            await _Users.InsertOneAsync(User);
             return User;
         }
 
