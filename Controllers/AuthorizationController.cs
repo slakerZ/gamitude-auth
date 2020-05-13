@@ -49,7 +49,7 @@ namespace AuthorizationApi.Controllers
             String jsonString = "{ \"UserId\":\""+user.Id+"\"}";
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
             // var result = await client.PostAsync("http://localhost:5030/api/stats/UserRank/Create", content);
-            var result = await client.PostAsync("http://gamitude.rocks:31779/api/stats/UserRank/Create", content);
+            var result = await client.PostAsync("http://gamitude.rocks/api/stats/UserRank/Create", content);
             user.Password = null;
             if(result.StatusCode == HttpStatusCode.OK)
                 return Created("Register", user);
